@@ -12,6 +12,7 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.dclab.mapping.ModelMapperI;
 import org.dclab.mapping.MyModelMapperI;
+import org.dclab.mapping.NameContentMapperI;
 import org.dclab.mapping.UserMapperI;
 import org.dclab.model.Model;
 import org.dclab.model.MyModel;
@@ -39,8 +40,8 @@ public class ModelService {
 	private ZooKeeperService zookeeperService;
 	@Autowired
 	private GitLabService gitLabService;
-	// @Autowired
-	// private ZooKeeperService zooKeeperService;
+	@Autowired
+	private NameContentMapperI nameContentMapperI;
 	public static int CLIENT_PORT = 2181;
 	public static int TIME_OUT = 2000;
 
@@ -75,11 +76,11 @@ public class ModelService {
 			iStream.close();
 		}
 	}
-	public void downloadSDM(int elementID, HttpServletResponse response) throws InterruptedException, IOException {
-		String path = modelMapperI.getFileIDByEId(elementID);
+	public void downloadSDM(HttpServletResponse response) throws InterruptedException, IOException {
+		String filename = "SDM.face";
+		String path = System.getProperty("project.root") + "files" + File.separator + "SDMFile" + File.separator + filename;
 		gitLabService.download(path);
 		File file = new File(path);
-		String filename = path.substring(path.lastIndexOf("/")+1);
 		response.setHeader("content-disposition", "attachment;filename="  
                 + URLEncoder.encode(filename, "UTF-8"));
 		
@@ -92,13 +93,11 @@ public class ModelService {
 	}
 	public int createSDM(Model model) throws Exception {
 		System.out.println("here:" + model.getDescription());
+		if(nameContentMapperI.getContentByName(model.getEnglishName())==null){
+			return -2;
+		}
 		if (modelMapperI.insertModel(model) == 1) {
-			// zooKeeperService.zookeeperWatch(model);
-			// zookeeper(model);
-			// ZkDemo.hello();
 			System.out.println("sucess");
-			// System.out.println(model.getElementID());
-
 			// 调用zookeeper通知成员审核元素
 			List<User> users = userMapperI.getUserByAuthority(model.getBigClass());
 			zookeeperService.zookeeperWatch(model, users);

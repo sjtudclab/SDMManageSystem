@@ -10,6 +10,8 @@ import javax.mail.internet.InternetAddress;
 import javax.mail.internet.MimeMessage;
 import org.dclab.model.Model;
 import org.dclab.model.User;
+import org.dclab.service.CRService;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 @Service
 public class EmailService {
@@ -20,7 +22,6 @@ public class EmailService {
 
 	// 发件人邮箱的 SMTP 服务器地址, 必须准确, 网易126邮箱的 SMTP 服务器地址为: smtp.126.com
 	public static String myEmailSMTPHost = "smtp.126.com";
-
 	// // 收件人邮箱（为有效邮箱）
 	// public static String receiveMailAccount = "757543865@qq.com";
 
@@ -104,15 +105,14 @@ public class EmailService {
 			message.addRecipient(MimeMessage.RecipientType.TO,
 					new InternetAddress(users.get(i).getEmail(), users.get(i).getUsername(), "UTF-8"));
 		}
-		String title = model.getCreator() + "于" + model.getCreateTime() + "创建元素：" + model.getEnglishName() + ",中文名称"
-				+ model.getChineseName();
+		String title = model.getCreator() + "于" + model.getCreateTime() + "创建元素：" + model.getEnglishName();
 		// 4. Subject: 邮件主题
 		message.setSubject(title, "UTF-8");
 		// "元素ID："+model.getElementID()+"\n"+
-		String content = "元素英文名称：" + model.getEnglishName() + "\n" + "元素中文名称：" + model.getChineseName() + "\n" + "创建者："
+		String content = "元素名称：" + model.getEnglishName() + "\n" + "创建者："
 				+ model.getCreator() + "\n" + "创建时间：" + model.getCreateTime() + "\n" + "类别：" + model.getBigClass() + "/"
 				+ model.getMiddleClass() + "/" + model.getSmallClass() + "\n" + "请您于3天内登录"
-				+ "http://localhost:8080/SDMManageSystem/tpls/models/checkCR_CCB.html" + "  进行审核投票。";
+				+ "http://localhost:8080/ModelManage/tpls/models/checkCR_CCB.html" + "  进行审核投票。";
 		// 5. Content: 邮件正文（可以使用html标签）
 		message.setContent(content, "text/html;charset=UTF-8");
 

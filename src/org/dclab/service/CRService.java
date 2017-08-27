@@ -1,14 +1,22 @@
 package org.dclab.service;
 
+import java.io.File;
+import java.io.IOException;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 
 import org.dclab.mapping.CRMapperI;
+import org.dclab.mapping.ClassMapperI;
 import org.dclab.mapping.ModelMapperI;
+import org.dclab.mapping.NameContentMapperI;
 import org.dclab.mapping.UserMapperI;
 import org.dclab.model.CR;
 import org.dclab.model.Model;
+import org.dclab.model.SDMclass;
+import org.dclab.util.SDMaddTool;
 import org.dclab.zk.GitLabService;
+import org.dom4j.DocumentException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -22,6 +30,14 @@ public class CRService {
 	private UserMapperI userMapperI;
 	@Autowired
 	private GitLabService gitLabService;
+	@Autowired
+	private SDMaddTool SDMaddTools;
+	@Autowired
+	private ClassMapperI classMapperI;
+	@Autowired
+	private NameContentMapperI nameContentMapperI;
+	private HashMap<Integer,String> nameMap=new HashMap<Integer,String>();
+
 	public void setCrMapperI(CRMapperI crMapperI) {
 		this.crMapperI = crMapperI;
 	}
@@ -101,7 +117,7 @@ public class CRService {
 		else
 			return null;
 	}
-	public int vote(CR cr) throws InterruptedException{
+	public int vote(CR cr) throws InterruptedException, DocumentException, IOException{
 		int elementID=cr.getEleID();
 		if(crMapperI.getUserState(elementID,cr.getVotor())==0){
 			crMapperI.insertCR(cr);
@@ -109,7 +125,16 @@ public class CRService {
 			if(crMapperI.getCheckNum(elementID)==userMapperI.getUserNum(authorityID)){
 				int state=crMapperI.getResult(elementID);
 				if(state>0){ //表示审核通过
-					gitLabService.upLoad(modelMapperI.getFileIDByEId(elementID)); //上传文件到gitlab上
+					getSDMclass();
+					Model model=modelMapperI.getModelByEleID(elementID);
+					String content=nameContentMapperI.getContentByName(model.getEnglishName());
+					modelMapperI.updateContent(elementID,content);
+					model.setContent(content);
+					System.out.println(nameMap.get(model.getMiddleClass()));
+					System.out.println(nameMap.get(model.getSmallClass()));
+					SDMaddTools.addSDM(model.getContent(), nameMap.get(model.getMiddleClass()), nameMap.get(model.getSmallClass()));
+					String path = System.getProperty("project.root") + "files" + File.separator + "SDMFile" + File.separator + "SDM.face";
+					gitLabService.upLoad(path); //上传文件到gitlab上
 					//TODU 调用zookeeper通知用户审核情况
 					return modelMapperI.updateState(elementID,1);
 				}
@@ -121,5 +146,11 @@ public class CRService {
 			
 		else 
 			return -1;
+	}
+	public void getSDMclass(){
+		List<SDMclass> sdmclasses=classMapperI.getSDMClass();
+		for(int i=0;i<sdmclasses.size();i++){
+			this.nameMap.put(sdmclasses.get(i).getClassID(), sdmclasses.get(i).getEnglishName());
+		}
 	}
 }

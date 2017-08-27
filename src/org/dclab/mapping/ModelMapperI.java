@@ -17,7 +17,7 @@ public interface ModelMapperI {
 	@Select("SELECT url FROM element,SDMfile WHERE elementID=#{elementID} AND element.fileID = SDMfile.fileID")
 	public String getUrlByElementID(int elementID);
 	
-	@Insert("INSERT INTO `element`(EnglishName,ChineseName,description,fileID,smallClass,middleClass,bigClass,creator,createTime,state) VALUES (#{EnglishName},#{ChineseName},#{description},#{fileID},#{smallClass},#{middleClass},#{bigClass},#{creator},#{createTime},#{state})")
+	@Insert("INSERT INTO `element`(EnglishName,description,smallClass,middleClass,bigClass,content,creator,createTime,state) VALUES (#{EnglishName},#{description},#{smallClass},#{middleClass},#{bigClass},#{content},#{creator},#{createTime},#{state})")
 	@Options(useGeneratedKeys = true, keyProperty = "elementID",keyColumn = "elementID")
 	public int insertModel(Model model);
 	
@@ -33,6 +33,9 @@ public interface ModelMapperI {
 	@Update("UPDATE element SET state=#{state} where elementID=#{elementID}")
 	public int updateState(@Param(value="elementID")int elementID,@Param(value="state")int state);
 
+	@Update("UPDATE element SET content=#{content} where elementID=#{elementID}")
+	public int updateContent(@Param(value="elementID")int elementID,@Param(value="content")String content);
+	
 	@Update("UPDATE element SET fileID=#{path} where elementID=#{elementID}")
 	public int updatePath(@Param(value="elementID")int elementID,@Param(value="path")String path);
 	

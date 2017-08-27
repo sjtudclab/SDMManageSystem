@@ -44,7 +44,7 @@
              <ul id="SDM" class="nav nav-list secondmenu collapse " role="tabpanel" style="height: 0px;text-indent: 2em">
                 <li onClick="getclassname(this)" ><a href="checkSDM.html" target="_parent" style="color: grey">查看并下载</a></li>
                 <li onClick="getclassname(this)"><a href="#" target="_parent" style="color: grey">新建SDM</a></li>
-                <li onClick="getclassname(this)"><a href="checkCR.html" target="_parent" style="color: grey">我的变更</a></li>
+                <li onClick="getclassname(this)"><a href="checkCR.html" target="_parent" style="color: grey">我的变更</a></li>  
               </ul></li>
             <li class="2"><a href="#myModel" class="nav-header collapsed" data-toggle="collapse" data-parent="#functionTab"><span class="glyphicon glyphicon-education"></span>&nbsp;我的模型</a>
             <ul id="myModel" class="nav nav-list secondmenu collapse" style="height: 0px;text-indent: 2em">
@@ -75,51 +75,39 @@
 				</div>
             </div>
             <div class="form-group">
-                <label for="middleClass" class="col-xs-3 control-label"><span style="color:red">*</span>模型层次:</label>
-                <div class="col-xs-3">
-                 	 <select id="middleClass" class="form-control">
-						<option value="3" id="conceptual">概念模型</option>
-						<option value="4" id="logical">逻辑模型</option>
-						<option value="5" id="paltform">平台模型</option>
+                <label for="middleClass" class="col-xs-3 control-label"><span style="color:red">*</span>模型:</label>
+                <div class="col-xs-5">
+                     <select id="middleClass" class="form-control">
+                        <option value='0'>请选择</option>
+						<option value="3" id="conceptual">Conceptual_Model</option>
+						<option value="5" id="logical">Logical_Model</option>
 					 </select>
 				</div>
             </div>
           <div class="form-group">
-                <label for="smallClass" class="col-xs-3 control-label"><span style="color:red">*</span>模型层次:</label>
-                <div class="col-xs-3">
+                <label for="smallClass" class="col-xs-3 control-label"><span style="color:red">*</span>类型:</label>
+                <div class="col-xs-5">
                  	 <select id="smallClass" class="form-control">
-						<option value="6" id="observable">可观测量</option>
-						<option value="15" id="conceptualEntity">概念实体</option>
-						<option value="16" id="logicalEntity">逻辑实体</option>
-						
-						<option value="17" id="platformEntity">平台实体</option>
+                 	    <option value='0'>请选择</option>
 					 </select>
 				</div>
             </div>
-            <div class="form-group">
-              <label for="ChineseName" class="col-xs-3 control-label"><span style="color:red">*</span>元素中文名称：</label>
-              <div class="col-xs-6">
-                  <input type="text" class="form-control" id="ChineseName" name="ChineseName"  >
+            <div class="form-group" id="div_EnglishName">
+              <label for="EnglishName" class="col-xs-3 control-label"><span style="color:red">*</span>元素名称：</label>
+              <div class="col-xs-5">
+                  <input type="text" class="form-control" id="EnglishName" name="EnglishName" style="float:left">
+                  <span class="help-inline" id="help_EnglishName" style="color:red;float:right"></span>
               </div>
             </div>
-            <div class="form-group">
-              <label for="EnglishName" class="col-xs-3 control-label"><span style="color:red">*</span>元素英语名称：</label>
-              <div class="col-xs-6">
-                  <input type="text" class="form-control" id="EnglishName" name="EnglishName">
-              </div>
-            </div>
-            <div class="form-group">
+            <div class="form-group" id="div_description">
               <label for="description" class="col-xs-3 control-label"><span style="color:red">*</span>描述：</label>
-              <div class="col-xs-6">
-                  <input type="text" class="form-control" id="description" name="description">
+              <div class="col-xs-9">
+             	 <textarea class="form-control" id="description" rows="4" cols="20" style="width:80%;float:left"></textarea>
+                
+                  <span class="help-inline" id="help_description" style="color:red;float:right"></span>
               </div>
             </div>
-             <div class="form-group">
-              <label for="SDMFile" class="col-xs-3 control-label"><span style="color:red">*</span>上传文件：</label>
-              <div class="col-xs-6">
-                  <input type="file" id="SDMFile" name="SDMFile">
-              </div>
-            </div>
+          
             <div class="form-group">
               <div class="col-xs-offset-3 col-xs-10" align="center">
                 <input type="button" onclick="createModel()" class="btn btn-primary"style="font-size:1.5em;text-align:center;" value="确&nbsp;认&nbsp;提&nbsp;交">
@@ -146,36 +134,76 @@
 				  		$("."+i).remove();
 		  }  
   }
+	  $("#middleClass").change(function(){ 
+		  var middleValue = $(this).val(); 
+		  if( middleValue == 3){ 
+			   $("#smallClass").empty();
+			   $("#smallClass").prepend("<option value='0'>请选择</option>");   //为Select插入一个Option(第一个位置)   
+			   $("#smallClass").append("<option value='4' id='Observables'>Observables</option>");
+			 
+		  }else if(middleValue == 5){
+			  $("#smallClass").empty();
+			  $("#smallClass").prepend("<option value='0'>请选择</option>");   //为Select插入一个Option(第一个位置)   
+			  $("#smallClass").append("<option value='6' id='CoordinateSystems'>CoordinateSystems</option>");
+			  $("#smallClass").append("<option value='7' id='LogicalValueTypes'>LogicalValueTypes</option>");
+			  $("#smallClass").append("<option value='8' id='Units'>Units</option>");
+			  $("#smallClass").append("<option value='9' id='ValueTypeUnits'>ValueTypeUnits</option>");
+			  $("#smallClass").append("<option value='10' id='LandMarks'>LandMarks</option>");
+			  $("#smallClass").append("<option value='11' id='ReferencePoints'>ReferencePoints</option>");
+			  $("#smallClass").append("<option value='12' id='Constraints'>Constraints</option>");
+			  $("#smallClass").append("<option value='13' id='MeasurementSystems'>MeasurementSystems</option>");
+			  $("#smallClass").append("<option value='14' id='Measurements'>Measurements</option>");
+			  $("#smallClass").append("<option value='15' id='Enumerations'>Enumerations</option>");
+		  }
+		  else{ 
+		   //carnameValue为空的情况，隐藏第二个下拉框 
+		   	  $("#smallClass").empty();
+			  $("#smallClass").empty();
+		  } 
+		 })
   })
+   function valid() {
+	//一下类型没有生效，不知道为什么
+	document.getElementById("help_EnglishName").innerHTML = "";
+	document.getElementById("help_description").innerHTML = "";
+	var EnglishName = $("#EnglishName").val().trim();
+	var description = $("#description").val().trim();
+	if (EnglishName == "") {
+		document.getElementById("help_EnglishName").innerHTML = "元素名称不能为空";
+		return false;
+	}
+	if (description == "") {
+		document.getElementById("help_description").innerHTML = "描述不能为空";
+		return false;
+	}
+	return true;
+}
    function createModel(){
-	  //var fileObj = document.getElementById("SDMFile").files[0];
-	  //var fileName=fileObj.name;
-	  //var path=uploadFile();
-	  //alert(path);
-	  var date=new Date(); 
-	  var dateString=date.getFullYear()+"-"+(date.getMonth()+1)+"-"+date.getDate();
-	   $.ajax({
-	       type: "POST",
-	       url: "/ModelManage/createSDM",    
-	       data: {bigClass:$("#bigClass").val(), middleClass:$("#middleClass").val(),smallClass:$("#smallClass").val(),
-	    	   ChineseName:$("#ChineseName").val(),EnglishName:$("#EnglishName").val(),
-	    	   description:$("#description").val(), creator:getCookie("username"),state:0,fileID:"",createTime:dateString},
-	       success: function(data) {
-	         if(data!=1){
-	        	 //alert(data);
-	        	 uploadFile(data);
-	       	 	 //alert("创建成功！");
-	         }
-	         else 
-	        	 alert("创建失败！");
-	       }
-	     }); 
+	   if(valid()){
+		   var date=new Date(); 
+			  var dateString=date.getFullYear()+"-"+(date.getMonth()+1)+"-"+date.getDate();
+			   $.ajax({
+			       type: "POST",
+			       url: "/ModelManage/createSDM",    
+			       data: {bigClass:$("#bigClass").val(), middleClass:$("#middleClass").val(),smallClass:$("#smallClass").val(),
+			    	   EnglishName:$("#EnglishName").val(),
+			    	   description:$("#description").val(), creator:getCookie("username"),state:0,createTime:dateString},
+			       success: function(data) {
+			    	   if(data==-2){
+				       	 	 alert("名字输入错误！");
+				         }
+				         else if(data>=0) 
+				        	 alert("创建成功！");
+				         else
+				        	 alert("创建失败！");
+				       }
+			     }); 
+	   }	  
   }
    function uploadFile(elementID){
 	 var formData =  new FormData(); 
 	 formData.append("SDMFile", $('#SDMFile')[0].files[0]);
 	 formData.append("elementID", elementID);
-	 //formData.append("SDMFile", "hello");
 	     $.ajax({  
 	          url: "/ModelManage/uploadModel" ,  
 	          type: "POST",
